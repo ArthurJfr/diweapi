@@ -3,9 +3,9 @@ const dotenv = require('dotenv').config();
 
 const dbConnection = mysql.createConnection({
     host : process.env.DB_HOST,
-    user : 'root',
+    user : process.env.DB_USER,
     password : '',
-    database : 'diwebdd'
+    database : process.env.DB_DATABASE
 });
 
 dbConnection.connect(error => {
