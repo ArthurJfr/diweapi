@@ -25,7 +25,7 @@ app.use((req, res, next) => {
     res.status(404).send('route introuvable');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; //penser à retirer "|| 3000"
 app.listen(PORT, () => {
     console.log("Server started on ${PORT}");
 })
