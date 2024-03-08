@@ -18,12 +18,12 @@ app.use(express.json());
 
 
 // path des routes users
-const userRoutes = require('./src/routes/userRoutes');
-app.use('/api/users', userRoutes);
 
-app.use((req, res, next) => {
-    res.status(404).send('route introuvable');
-});
+const userRoutes = require('./src/routes/userRoutes');
+app.use('/users', userRoutes);
+
+
+
 
 const PORT = process.env.PORT || 3000; //penser à retirer "|| 3000"
 app.listen(PORT, () => {
