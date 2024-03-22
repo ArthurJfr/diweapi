@@ -14,8 +14,10 @@ exports.test = async (req, res) => {
 
 exports.register = async (req, res) => {
     try {
+
             const {fname, lname, birth_at, email, password, phone, sexe, role, zip_code, adress, city, etablishment}  = req.body
-            res.send(req.body);
+            res.status(200).send("ok");
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const hashedFname = await bcrypt.hash(fname, 10);
     const hashedRole = await bcrypt.hash(role, 10);
@@ -26,12 +28,12 @@ exports.register = async (req, res) => {
     const hashedCity = await bcrypt.hash(city, 10);
     const hashedLname = await bcrypt.hash(lname, 10);
     const hashedEtab = await bcrypt.hash(etablishment, 10);
-          
-        const str = ""
-        for (let i = 0 ; i <= 6;  i++) {
-                str += Math.random(9).toString()  
+        const str = 0
+        for (let i = 0 ; i < 6;  i++) {
+                str += Math.random(9);
         }
-        
+        console.log(str.toString());
+     
 
         if(role == "patient") {
            // UserModel.createPatient({
@@ -43,8 +45,8 @@ exports.register = async (req, res) => {
           //  }) 
 
         }
-           } catch {
-            console.log('ca ne psse pas ');
+           } catch (err) {
+            console.log(err);
            }
    
 
