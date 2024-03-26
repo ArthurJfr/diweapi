@@ -1,8 +1,12 @@
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/User');
+const jwt= require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+const { log } = require('console');
+const LunchModel = require('../models/Lunch');
 
-
-
+const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '../..','config', 'jwt', 'private_key.pem'), 'utf8');
 exports.test = async (req, res) => {
     try {
      res.status(200).send("okokokokok");
@@ -11,24 +15,16 @@ exports.test = async (req, res) => {
      res.status(200).send("nonono");
     }
  }
-
+function convertDateToMySQLFormat(dateString) {
+    const parts = dateString.split('-');
+    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return `${formattedDate} 00:00:00`;
+}
 exports.register = async (req, res) => {
     try {
 
-            const {fname, lname, birth_at, email, password, phone, sexe, role, zip_code, adress, city, etablishment}  = req.body
-        const dateBirth = new Date(birth_at);
-        const dateBirthAt = dateBirth.toISOString().slice(0, 19).replace('T', ' ');
+    const {fname, lname, email, password, phone, sexe, role, zip_code, adress, city, etablishment}  = req.body
     const hashedPassword = await bcrypt.hash(password, 10);
-   // const hashedFname = await bcrypt.hash(fname, 10);
-   // const hashedRole = await bcrypt.hash(role, 10);
-   // const hashedEmail = await bcrypt.hash(email, 10);
-   // const hashedPhone = await bcrypt.hash(phone, 10);
-   // const hashedZip = await bcrypt.hash(zip_code, 10);
-   // const hashedAdress = await bcrypt.hash(adress, 10);
-   // const hashedCity = await bcrypt.hash(city, 10);
-  //  const hashedLname = await bcrypt.hash(lname, 10);
-  //  const hashedEtab = await bcrypt.hash(etablishment, 10);
-
 
         if(role == 'medecin') {
                 let active_code = '';
@@ -37,21 +33,27 @@ exports.register = async (req, res) => {
                 }
 
 
-                const newMedecin = {
-                        fname,
-                        lname,
+                 newMedecin = {
+                        fname ,
+                        lname ,
                         email,
                         password: hashedPassword,
-                        birth_at: dateBirthAt,
                         phone,
                         sexe,
                         role,
                         zip_code,
                         adress,
                         city,
-                        etablishment
+                        etablishment,
+                        active_code
                     };
-                    UserModel.createMedecin(newMedecin);
+                    UserModel.createMedecin({fname ,lname ,email, password: hashedPassword, phone, sexe, role, zip_code, adress,city, etablishment, active_code}, (err, result) => {
+                        if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(201).send({ id: result, message: "Inscription réussie" });
+                }
+                    } );
 
         } else if (role == 'patient'){
 
@@ -60,7 +62,6 @@ exports.register = async (req, res) => {
                         lname,
                         email,
                         password: hashedPassword,
-                        birth_at: dateBirthAt,
                         phone,
                         sexe,
                         role,
@@ -69,19 +70,60 @@ exports.register = async (req, res) => {
                         city
                         
                     };
-        }
-        
-    
-       // console.log(str);
-       res.status(200).send({dateBirthAt});
-           } catch (err) {
-            console.log(err);
-            res.status(500).send("An error occured");
-           }
-   
+                    UserModel.createPatient(newPatient, (err, iduser) => {
+                        if(err) {
+                    res.status(500).send(err);
+                     console.log(err);
 
-    
-    
-  
+
+                        } else {
+                       
+                            LunchModel.createLunch({id : iduser.insertId, period : "matin"}, (err,result) => {if(err){console.log('error create breakfast')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "midi"}, (err,result) => {if(err){console.log('error create breakfast')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "soir"}, (err,result) => {if(err){console.log('error create breakfast')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
+
+                    res.status(201).send({ id: iduser, message: "Inscription réussie" });
+                     console.log(iduser.insertId);
+
+                        }
+                    })
+        }
+    } 
+    catch (err) {
+        console.log(err);
+        res.status(500).send("An error occured");
+        }
 }
+
+    exports.login = async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            UserModel.findByEmail({email}, async (err, user) => {
+               // console.log(user);
+                if (err) {
+                    res.status(500).send(err);
+                } else if (user[0]) {
+                    const validPassword =  await bcrypt.compare(password, user[0].password);
+                     if (validPassword) {
+                        //  JWT
+                    const tokenPayload = {
+                        id: user.id,
+                        email: user.email
+                    };
+                            const token = jwt.sign(tokenPayload, PRIVATE_KEY, { expiresIn: '24h' ,  algorithm: 'RS256'});
+                        res.status(200).send({token});
+                    } else {
+                        res.status(401).send('Mot de passe incorrect');
+                    }
+                } else {
+                    res.status(404).send('Utilisateur non trouvé');
+                }
+            });
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
 
