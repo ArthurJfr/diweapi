@@ -34,8 +34,8 @@ exports.register = async (req, res) => {
 
 
                  newMedecin = {
-                        fname ,
-                        lname ,
+                      fname,
+                        lname,
                         email,
                         password: hashedPassword,
                         phone,
@@ -44,18 +44,24 @@ exports.register = async (req, res) => {
                         zip_code,
                         adress,
                         city,
+
                         etablishment,
                         active_code
                     };
-                    UserModel.createMedecin({fname ,lname ,email, password: hashedPassword, phone, sexe, role, zip_code, adress,city, etablishment, active_code}, (err, result) => {
+                    UserModel.createMedecin( newMedecin, (err, iduser) => {
                         if (err) {
+                            console/log(err)
                     res.status(500).send(err);
                 } else {
-                    res.status(201).send({ id: result, message: "Inscription réussie" });
+                    lastInsertId = iduser.insertId;
+                    res.status(201).send({ lastInsertId , message: "Inscription réussie" });
                 }
                     } );
 
-        } else if (role == 'patient'){
+        } 
+        
+        
+        else if (role == 'patient'){
 
                 const newPatient = {
                         fname,
@@ -127,3 +133,30 @@ exports.register = async (req, res) => {
         }
     }
 
+exports.linkToPro = async (req, res) => {
+    try {
+        const {active_code , id_user, email} = req.body 
+        if(active_code) {
+            UserModel.findByCode({active_code}, (err, user) => {if(err){res.status(404).send('Médecin introuvable'); }
+            else{
+                console.log(user[0]);
+                if(user[0]) 
+                {
+                    const id_medecin = user[0].id_medecin;
+                    UserModel.linkToPro({id_user, id_medecin}, (err, result) => {
+                        if(err) {res.status(500).send('Liaison avec médecin échoué')}
+                        else  {
+                            res.status(201).send(result)
+                        }
+                    });
+                }
+
+            }})
+
+
+        }
+
+    } catch(err) {
+        res.status(500).send(err);
+    }
+}
