@@ -20,7 +20,10 @@ app.use(express.json());
 // path des routes users
 
 const userRoutes = require('./src/routes/userRoutes');
+const apiRoutes = require('./src/routes/apiRoutes')
 app.use('/api/users', userRoutes);
+app.use('/api', apiRoutes);
+
 
 
 

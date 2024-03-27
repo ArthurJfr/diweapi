@@ -32,8 +32,8 @@ const UserModel = {
         db.query(query, [data.active_code], callback);
     },
     linkToPro : (data, callback) => {
-        const query = "UPDATE user SET `id_medecin` = ? WHERE id = ?"
-        db.query(query,[data.id_medecin,data.id_user] , callback);
+        const query = "UPDATE user SET id_medecin = ? WHERE id = ?"
+        db.query(query,[data.idMed,data.id_user] , callback);
     }
     
 };

@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { log } = require('console');
 const LunchModel = require('../models/Lunch');
+const DosageModel = require('../models/Dosage');
 
 const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '../..','config', 'jwt', 'private_key.pem'), 'utf8');
 exports.test = async (req, res) => {
@@ -31,33 +32,18 @@ exports.register = async (req, res) => {
                 for (let i = 0 ; i < 6;  i++) {
                         active_code += Math.floor(Math.random() * 10).toString();
                 }
-
-
                  newMedecin = {
-                      fname,
-                        lname,
-                        email,
-                        password: hashedPassword,
-                        phone,
-                        sexe,
-                        role,
-                        zip_code,
-                        adress,
-                        city,
-
-                        etablishment,
-                        active_code
+                      fname,lname,email,password: hashedPassword,phone,sexe,role,zip_code,adress,city,etablishment,active_code
                     };
                     UserModel.createMedecin( newMedecin, (err, iduser) => {
                         if (err) {
-                            console/log(err)
                     res.status(500).send(err);
-                } else {
-                    lastInsertId = iduser.insertId;
-                    res.status(201).send({ lastInsertId , message: "Inscription réussie" });
-                }
-                    } );
-
+                    } 
+                    else {
+                        lastInsertId = iduser.insertId;
+                        res.status(201).send({ lastInsertId , message: "Inscription réussie" });
+                    }
+                    });
         } 
         
         
@@ -90,7 +76,7 @@ exports.register = async (req, res) => {
                             LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
                             LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
                             LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
-
+                            DosageModel.createDosage({id : iduser.insertId}, (err) => {if(err){console.log(err)}});
                     res.status(201).send({ id: iduser, message: "Inscription réussie" });
                      console.log(iduser.insertId);
 
@@ -116,11 +102,11 @@ exports.register = async (req, res) => {
                      if (validPassword) {
                         //  JWT
                     const tokenPayload = {
-                        id: user.id,
-                        email: user.email
+                        id: user[0].id,
+                        email: user[0].email
                     };
                             const token = jwt.sign(tokenPayload, PRIVATE_KEY, { expiresIn: '24h' ,  algorithm: 'RS256'});
-                        res.status(200).send({token});
+                        res.status(200).send({ id : tokenPayload.id, token});
                     } else {
                         res.status(401).send('Mot de passe incorrect');
                     }
@@ -142,8 +128,8 @@ exports.linkToPro = async (req, res) => {
                 console.log(user[0]);
                 if(user[0]) 
                 {
-                    const id_medecin = user[0].id_medecin;
-                    UserModel.linkToPro({id_user, id_medecin}, (err, result) => {
+                    const idMed = user[0].id;
+                    UserModel.linkToPro({id_user, idMed}, (err, result) => {
                         if(err) {res.status(500).send('Liaison avec médecin échoué')}
                         else  {
                             res.status(201).send(result)
@@ -160,3 +146,4 @@ exports.linkToPro = async (req, res) => {
         res.status(500).send(err);
     }
 }
+
