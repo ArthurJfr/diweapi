@@ -20,11 +20,14 @@ app.use(express.json());
 // path des routes users
 
 const userRoutes = require('./src/routes/userRoutes');
-const apiRoutes = require('./src/routes/apiRoutes')
+const dosageRoutes = require('./src/routes/dosageRoutes');
+const lunchRoutes = require('./src/routes/lunchRoutes');
+const glucoRoutes = require('./src/routes/glucoRoutes');
+
 app.use('/api/users', userRoutes);
-app.use('/api', apiRoutes);
-
-
+app.use('/api/dosage', dosageRoutes);
+app.use('/api/repas', lunchRoutes);
+app.use('/api/gluco', glucoRoutes);
 
 
 

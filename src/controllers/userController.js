@@ -3,7 +3,6 @@ const UserModel = require('../models/User');
 const jwt= require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const { log } = require('console');
 const LunchModel = require('../models/Lunch');
 const DosageModel = require('../models/Dosage');
 
@@ -16,11 +15,7 @@ exports.test = async (req, res) => {
      res.status(200).send("nonono");
     }
  }
-function convertDateToMySQLFormat(dateString) {
-    const parts = dateString.split('-');
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return `${formattedDate} 00:00:00`;
-}
+
 exports.register = async (req, res) => {
     try {
 
@@ -71,11 +66,11 @@ exports.register = async (req, res) => {
                         } else {
                        
                             LunchModel.createLunch({id : iduser.insertId, period : "matin"}, (err,result) => {if(err){console.log('error create breakfast')}});
-                            LunchModel.createLunch({id : iduser.insertId, period : "midi"}, (err,result) => {if(err){console.log('error create breakfast')}});
-                            LunchModel.createLunch({id : iduser.insertId, period : "soir"}, (err,result) => {if(err){console.log('error create breakfast')}});
-                            LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
-                            LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
-                            LunchModel.createLunch({id : iduser.insertId, period : "collation"}, (err,result) => {if(err){console.log('error create breakfast')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "midi"}, (err,result) => {if(err){console.log('error create midi')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "soir"}, (err,result) => {if(err){console.log('error create soir')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "collation_a"}, (err,result) => {if(err){console.log('error create col')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "collation_b"}, (err,result) => {if(err){console.log('error create col')}});
+                            LunchModel.createLunch({id : iduser.insertId, period : "collation_c"}, (err,result) => {if(err){console.log('error create col')}});
                             DosageModel.createDosage({id : iduser.insertId}, (err) => {if(err){console.log(err)}});
                     res.status(201).send({ id: iduser, message: "Inscription réussie" });
                      console.log(iduser.insertId);
@@ -106,7 +101,7 @@ exports.register = async (req, res) => {
                         email: user[0].email
                     };
                             const token = jwt.sign(tokenPayload, PRIVATE_KEY, { expiresIn: '24h' ,  algorithm: 'RS256'});
-                        res.status(200).send({ id : tokenPayload.id, token});
+                        res.status(200).send({token});
                     } else {
                         res.status(401).send('Mot de passe incorrect');
                     }

@@ -3,7 +3,7 @@ const db = require('../../config/db.config');
 
 const LunchModel = {
 
-            createLunch : (data, callback) => {
+    createLunch : (data, callback) => {
         const query =  `INSERT INTO lunch (id_user, period) VALUES (?,?)`
         db.query(
            query, 
@@ -19,6 +19,14 @@ const LunchModel = {
            callback
             );   
     }, 
+            getALlLunch : (data, callback) => {
+        const query =  `SELECT * FROM lunch WHERE id_user = ?`
+        db.query(
+           query, 
+           [data.id_user],
+           callback
+            );   
+    }
 
 }
 

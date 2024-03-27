@@ -10,7 +10,6 @@ const PUBLIC_KEY = fs.readFileSync(pathToPublicKey, 'utf8');
 const authenticationJwt = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Généralement sous la forme "Bearer TOKEN"
-console.log(token);
   if (token == null) return res.sendStatus(401); // Pas de token fourni
 
   jwt.verify(token,  PUBLIC_KEY, { algorithms: ['RS256'] }, (err, user) => {
