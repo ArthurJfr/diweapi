@@ -1,4 +1,4 @@
-const db = require('../config/db.config');
+const db = require('../../config/db.config');
 
 
 const UserModel = {
@@ -11,18 +11,38 @@ const UserModel = {
            callback
             );   
     }, 
+    
+
     //Insert role medecin
     createMedecin : (data, callback) => {
-        
+        const query =  `INSERT INTO user (fname, lname, email, password,active_code, etablishment, phone, sexe, role, zip_code, adress, city) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
         db.query(
-            `INSERT INTO user (fname, lname, birth_at, email, password,active_code, etablishment, phone, sexe, role, zip_code, adress, city)`
-        );   
+            query, 
+            [data.fname,data.lname, data.email, data.password, data.active_code, data.etablishment, data.phone, data.sexe, data.role, data.zip_code, data.adress, data.city],
+            callback
+             ); 
     }, 
     // méthode pour trouver le user via l'email lors du login
-    findByEmail : (data, callback) => {
-        const query = `SELECT * FROM user WHERE email = ?`
+    findByEmail : (data,callback ) => {
+        const query = "SELECT * FROM user WHERE email = ?"
         db.query(query,[data.email], callback)
+    },
+        findById : (data,callback ) => {
+        const query = "SELECT * FROM user WHERE id = ?"
+        db.query(query,[data.id], callback)
+    },
+    findByCode : (data, callback) => {
+        const query = "SELECT * FROM user WHERE active_code = ?"
+        db.query(query, [data.active_code], callback);
+    },
+    linkToPro : (data, callback) => {
+        const query = "UPDATE user SET id_medecin = ? WHERE id = ?"
+        db.query(query,[data.idMed,data.id_user] , callback);
+    },
+    updateReadData : (data, callback) => {
+        const query = "UPDATE user SET read_data = ? WHERE id = ?"
+        db.query(query,[data.read_data ,data.id] , callback);
     }
- 
+    
 };
 module.exports = UserModel

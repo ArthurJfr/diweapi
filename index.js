@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const dbConnection = require('./src/config/db.config')
+const dbConnection = require('./config/db.config')
 
 
 // ne pas mettre db_user dans .env car problèmes
@@ -20,8 +20,14 @@ app.use(express.json());
 // path des routes users
 
 const userRoutes = require('./src/routes/userRoutes');
-app.use('/users', userRoutes);
+const dosageRoutes = require('./src/routes/dosageRoutes');
+const lunchRoutes = require('./src/routes/lunchRoutes');
+const glucoRoutes = require('./src/routes/glucoRoutes');
 
+app.use('/api/users', userRoutes);
+app.use('/api/dosage', dosageRoutes);
+app.use('/api/repas', lunchRoutes);
+app.use('/api/gluco', glucoRoutes);
 
 
 
