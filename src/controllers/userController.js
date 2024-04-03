@@ -113,6 +113,34 @@ exports.register = async (req, res) => {
             res.status(500).send(err);
         }
     }
+exports.changeReadData = async (req, res) => {
+    try {
+        if(req.user) {
+            const id = req.user.id;
+            UserModel.findById({id}, (err, data) => {
+                if(err) {res.status(404).send(err)}
+                else {
+                    res.status(200).send(data[0].read_data);
+                    if(data[0].read_data == 'mg/dL') {
+                        const read_data = 'g/L';
+                    } else if (data[0].read_data == 'mg/dL') {
+                        const read_data = 'mg/dL';
+                      
+                    }
+                      UserModel.updateReadData({read_data, id}, (err, result) => {
+                            if (err) {
+                                res.status(400).send(err);
+                            } else {
+                                res.status(200).send(result);
+                            }
+                        })
+                }
+            })
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+}
 
 exports.linkToPro = async (req, res) => {
     try {

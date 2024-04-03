@@ -27,6 +27,10 @@ const UserModel = {
         const query = "SELECT * FROM user WHERE email = ?"
         db.query(query,[data.email], callback)
     },
+        findById : (data,callback ) => {
+        const query = "SELECT * FROM user WHERE id = ?"
+        db.query(query,[data.id], callback)
+    },
     findByCode : (data, callback) => {
         const query = "SELECT * FROM user WHERE active_code = ?"
         db.query(query, [data.active_code], callback);
@@ -34,6 +38,10 @@ const UserModel = {
     linkToPro : (data, callback) => {
         const query = "UPDATE user SET id_medecin = ? WHERE id = ?"
         db.query(query,[data.idMed,data.id_user] , callback);
+    },
+    updateReadData : (data, callback) => {
+        const query = "UPDATE user SET read_data = ? WHERE id = ?"
+        db.query(query,[data.read_data ,data.id] , callback);
     }
     
 };

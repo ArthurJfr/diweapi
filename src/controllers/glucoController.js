@@ -1,5 +1,7 @@
 const GlucoModel = require("../models/Gluco");
 
+
+
 exports.onScan = async (req, res) => {
     try {
         if (req.user) {
@@ -38,7 +40,7 @@ exports.getAllScan = async (req, res) => {
         const id_user = req.user.id
         GlucoModel.getAllScan({id_user}, (err, data) => {
             if(err) {
-                res.status(404).send(err)
+                res.status(404).send(err);
             } else {
                 res.status(200).send(data);
             }

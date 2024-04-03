@@ -7,6 +7,8 @@ const authenticationJwt = require('../middleware/authentication');
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/linkto',authenticationJwt, userController.linkToPro);
+router.post('/changeReadData',authenticationJwt, userController.changeReadData);
+
 
 
 
